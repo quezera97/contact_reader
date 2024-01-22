@@ -7,19 +7,46 @@ import '../constant.dart';
 import '../model/contact_model.dart';
 import '../providers/contact_provider.dart';
 
+import '../services/database_helper.dart';
+// import '../services/mail_services.dart';
 import '../widgets/button.dart';
 import '../widgets/confirmation_pop_up.dart';
 import 'edit_contact.dart';
 import 'add_contact.dart';
 import 'profile_contact.dart';
 
-class MyContact extends ConsumerWidget {
-  MyContact({Key? key}) : super(key: key);
+class MyContact extends ConsumerStatefulWidget {
+  const MyContact({Key? key}) : super(key: key);
 
-  final buttonWidget = ButtonWidget();
   @override
-  Widget build(BuildContext context, WidgetRef ref) {    
-    final userContact = ref.watch(getContactProvider);
+  ConsumerState<MyContact> createState() => _MyContactState();
+}
+
+class _MyContactState extends ConsumerState<MyContact> {
+  final buttonWidget = ButtonWidget();
+  String searchedValue = '';
+  late List<ContactModel> allContactDB = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    initData();
+  }
+
+  Future<void> initData() async {
+    try {
+      List<ContactModel> allContact = await DatabaseHelper.getAllContact() ?? [];
+      ref.read(allContactProvider.notifier).setContactsProvider(allContact);
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // final allContact = ref.watch(getAllContactProvider);
+    allContactDB = ref.watch(allContactProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -28,8 +55,10 @@ class MyContact extends ConsumerWidget {
         backgroundColor: mainColor,
         actions: [
           IconButton(
-            onPressed: () {
-              ref.read(getContactProvider);
+            onPressed: () async {
+              Future.sync(() => ref.refresh(getAllContactProvider)).then((_) {
+                initData();
+              });
             },
             icon: const Icon(Icons.refresh),
           ),
@@ -39,9 +68,8 @@ class MyContact extends ConsumerWidget {
         padding: mainScreenPadding,
         child: SafeArea(
             child: DefaultTabController(
-              length: 2,
-              child: Column(
-                children: <Widget>[
+                length: 1,
+                child: Column(children: <Widget>[
                   TextFormField(
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(
@@ -52,7 +80,9 @@ class MyContact extends ConsumerWidget {
                       suffixIcon: Icon(Icons.search),
                     ),
                     onChanged: (value) {
-                      print(value);
+                      setState(() {
+                        searchedValue = value;
+                      });
                     },
                   ),
                   gapBetweenDifferentField,
@@ -71,254 +101,112 @@ class MyContact extends ConsumerWidget {
                               child: Text('All', style: TextStyle(color: Colors.white)),
                             ),
                           ),
-                          Tab(
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text('Favorite', style: TextStyle(color: Colors.white)),
-                            ),
-                          ),
+                          // Tab(
+                          //   child: Padding(
+                          //     padding: EdgeInsets.all(8.0),
+                          //     child: Text('Favorite', style: TextStyle(color: Colors.white)),
+                          //   ),
+                          // ),
                         ],
                       ),
                     ],
                   ),
                   Expanded(
-                    child: TabBarView(
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            child: userContact.when(
-                              data: (users) {
-                                return ListView.builder(
-                                  itemCount: users.length,
-                                  itemBuilder: (context, index) {
-                                    ContactModel contact = users[index];
-                                    String avatar = contact.avatar ?? '';
-                                    String firstName = contact.firstName ?? '';
-                                    String lastName = contact.lastName ?? '';
-                                    String email = contact.email ?? '';
+                      child: TabBarView(children: <Widget>[
+                    if (allContactDB.isNotEmpty) ...[
+                      ListView.builder(
+                        itemCount: allContactDB.length,
+                        itemBuilder: (context, index) {
+                          ContactModel contact = allContactDB[index];
+                          String avatar = contact.avatar ?? '';
+                          String firstName = contact.firstName ?? '';
+                          String lastName = contact.lastName ?? '';
+                          String email = contact.email ?? '';
+                          String fullName = '$firstName $lastName';
 
-                                    return Slidable(
-                                      endActionPane: ActionPane(
-                                        motion: const BehindMotion(),
-                                        children: [
-                                          SlidableAction(
-                                            onPressed: (context) {
-                                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditContact(
-                                                firstName,
-                                                lastName,
-                                                email,
-                                                avatar
-                                              )));
-                                            },
-                                            foregroundColor: Colors.blue,
-                                            icon: Icons.edit,
-                                          ),
-                                          SlidableAction(
-                                            onPressed: (context) {
-                                              showDialog(
-                                                context: context,
-                                                builder: (BuildContext context) {
-                                                  return ConfirmationPopUp(
-                                                    contentAlert: 'Are you sure you want to delete this contact?',
-                                                    onConfirm: () {
-                                                      print('asd');
-                                                    },
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            foregroundColor: Colors.red,
-                                            icon: Icons.delete,
-                                          ),
-                                        ],
-                                      ),
-                                      child: ListTile(                            
-                                        title: Text(firstName),
-                                        subtitle: Text(email),
-                                        leading: avatar != '' 
-                                        ? InkWell(
-                                            child: CircleAvatar(
-                                              radius: 25,
-                                              backgroundColor: Colors.transparent,
-                                              child: ClipOval(
-                                                child: Image.network(
-                                                  avatar,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),                              
-                                            ),
-                                            onTap: () {
-                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileContact(
-                                              firstName,
-                                              lastName,
-                                              email,
-                                              avatar
-                                            )));
-                                          },
-                                        ) 
-                                        : InkWell(
-                                            child: CircleAvatar(
-                                              radius: 25,
-                                              backgroundColor: Colors.transparent,
-                                              child: ClipOval(
-                                                child: Image.asset(
-                                                  'asset/contact.png',
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileContact(
-                                                firstName,
-                                                lastName,
-                                                email,
-                                                avatar
-                                            )));
-                                        },
-                                        ),
-                                        trailing: IconButton(
-                                          onPressed: () {
-                                            print('send email');
-                                          },
-                                          icon: const Icon(Icons.send),
-                                          color: mainColor,
-                                        ),                        
-                                      )
-                                    );
-                                  },
-                                );
-                              },
-                              loading: () {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              },
-                              error: (error, stack) {
-                                return Center(
-                                  child: Text('Error: $error'),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            child: userContact.when(
-                              data: (users) {
-                                return ListView.builder(
-                                  itemCount: users.length,
-                                  itemBuilder: (context, index) {
-                                    ContactModel contact = users[index];
-                                    String avatar = contact.avatar ?? '';
-                                    String firstName = contact.firstName ?? '';
-                                    String lastName = contact.lastName ?? '';
-                                    String email = contact.email ?? '';
+                          if (searchedValue.isNotEmpty && !fullName.toLowerCase().contains(searchedValue.toLowerCase())) {
+                            return Container();
+                          }
 
-                                    return Slidable(
-                                      endActionPane: ActionPane(
-                                        motion: const BehindMotion(),
-                                        children: [
-                                          SlidableAction(
-                                            onPressed: (context) {
-                                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditContact(
-                                                firstName,
-                                                lastName,
-                                                email,
-                                                avatar
-                                              )));
+                          return Slidable(
+                              endActionPane: ActionPane(
+                                motion: const BehindMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (context) {
+                                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditContact(firstName, lastName, email, avatar)));
+                                    },
+                                    foregroundColor: Colors.blue,
+                                    icon: Icons.edit,
+                                  ),
+                                  SlidableAction(
+                                    onPressed: (context) async {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return ConfirmationPopUp(
+                                            contentAlert: 'Are you sure you want to delete this contact?',
+                                            onConfirm: () async {
+                                              await DatabaseHelper.deleteContact(contact);
+                                              ref.read(allContactProvider.notifier).removeContactsProvider(contact.id);
                                             },
-                                            foregroundColor: Colors.blue,
-                                            icon: Icons.edit,
-                                          ),
-                                          SlidableAction(
-                                            onPressed: (context) {
-                                              showDialog(
-                                                context: context,
-                                                builder: (BuildContext context) {
-                                                  return ConfirmationPopUp(
-                                                    contentAlert: 'Are you sure you want to delete this contact?',
-                                                    onConfirm: () {
-                                                      print('asd');
-                                                    },
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            foregroundColor: Colors.red,
-                                            icon: Icons.delete,
-                                          ),
-                                        ],
-                                      ),
-                                      child: ListTile(                            
-                                        title: Text(firstName),
-                                        subtitle: Text(email),
-                                        leading: avatar != '' 
-                                        ? InkWell(
-                                            child: CircleAvatar(
-                                              radius: 25,
-                                              backgroundColor: Colors.transparent,
-                                              child: ClipOval(
-                                                child: Image.network(
-                                                  avatar,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),                              
-                                            ),
-                                            onTap: () {
-                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileContact(
-                                              firstName,
-                                              lastName,
-                                              email,
-                                              avatar
-                                            )));
-                                          },
-                                        ) 
-                                        : InkWell(
-                                            child: CircleAvatar(
-                                              radius: 25,
-                                              backgroundColor: Colors.transparent,
-                                              child: ClipOval(
-                                                child: Image.asset(
-                                                  'asset/contact.png',
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileContact(
-                                                firstName,
-                                                lastName,
-                                                email,
-                                                avatar
-                                            )));
+                                          );
                                         },
+                                      );
+                                    },
+                                    foregroundColor: Colors.red,
+                                    icon: Icons.delete,
+                                  ),
+                                ],
+                              ),
+                              child: ListTile(
+                                title: Text(fullName),
+                                subtitle: Text(email),
+                                leading: avatar != ''
+                                    ? InkWell(
+                                        child: CircleAvatar(
+                                          radius: 25,
+                                          backgroundColor: Colors.transparent,
+                                          child: ClipOval(
+                                            child: Image.network(
+                                              avatar,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
                                         ),
-                                        trailing: IconButton(
-                                          onPressed: () {
-                                            print('send email');
-                                          },
-                                          icon: const Icon(Icons.send),
-                                          color: mainColor,
-                                        ),                        
+                                        onTap: () {
+                                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileContact(firstName, lastName, email, avatar)));
+                                        },
                                       )
-                                    );
+                                    : InkWell(
+                                        child: CircleAvatar(
+                                          radius: 25,
+                                          backgroundColor: Colors.transparent,
+                                          child: ClipOval(
+                                            child: Image.asset(
+                                              'asset/contact.png',
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileContact(firstName, lastName, email, avatar)));
+                                        },
+                                      ),
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    print('send email');
                                   },
-                                );
-                              },
-                              loading: () {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              },
-                              error: (error, stack) {
-                                return Center(
-                                  child: Text('Error: $error'),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ]))
+                                  icon: const Icon(Icons.send),
+                                  color: mainColor,
+                                ),
+                              ));
+                        },
+                      ),
+                    ] else ...[
+                      const CircularProgressIndicator(),
+                    ],
+                  ]))
                 ]))),
       ),
       floatingActionButton: FloatingActionButton(
@@ -331,3 +219,109 @@ class MyContact extends ConsumerWidget {
     );
   }
 }
+
+
+// Container(
+                    //   child: allContact.when(
+                    //     data: (users) {
+                    //       return ListView.builder(
+                    //         itemCount: users.length,
+                    //         itemBuilder: (context, index) {
+                    //           ContactModel contact = users[index];
+                    //           String avatar = contact.avatar ?? '';
+                    //           String firstName = contact.firstName ?? '';
+                    //           String lastName = contact.lastName ?? '';
+                    //           String email = contact.email ?? '';
+                    //           String fullName = '$firstName $lastName';
+
+                    //           if (searchedValue.isNotEmpty && !fullName.toLowerCase().contains(searchedValue.toLowerCase())) {
+                    //             return Container();
+                    //           }
+
+                    //           return Slidable(
+                    //               endActionPane: ActionPane(
+                    //                 motion: const BehindMotion(),
+                    //                 children: [
+                    //                   SlidableAction(
+                    //                     onPressed: (context) {
+                    //                       Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditContact(firstName, lastName, email, avatar)));
+                    //                     },
+                    //                     foregroundColor: Colors.blue,
+                    //                     icon: Icons.edit,
+                    //                   ),
+                    //                   SlidableAction(
+                    //                     onPressed: (context) {
+                    //                       showDialog(
+                    //                         context: context,
+                    //                         builder: (BuildContext context) {
+                    //                           return ConfirmationPopUp(
+                    //                             contentAlert: 'Are you sure you want to delete this contact?',
+                    //                             onConfirm: () {
+                    //                               print('asd');
+                    //                             },
+                    //                           );
+                    //                         },
+                    //                       );
+                    //                     },
+                    //                     foregroundColor: Colors.red,
+                    //                     icon: Icons.delete,
+                    //                   ),
+                    //                 ],
+                    //               ),
+                    //               child: ListTile(
+                    //                 title: Text(fullName),
+                    //                 subtitle: Text(email),
+                    //                 leading: avatar != ''
+                    //                     ? InkWell(
+                    //                         child: CircleAvatar(
+                    //                           radius: 25,
+                    //                           backgroundColor: Colors.transparent,
+                    //                           child: ClipOval(
+                    //                             child: Image.network(
+                    //                               avatar,
+                    //                               fit: BoxFit.cover,
+                    //                             ),
+                    //                           ),
+                    //                         ),
+                    //                         onTap: () {
+                    //                           Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileContact(firstName, lastName, email, avatar)));
+                    //                         },
+                    //                       )
+                    //                     : InkWell(
+                    //                         child: CircleAvatar(
+                    //                           radius: 25,
+                    //                           backgroundColor: Colors.transparent,
+                    //                           child: ClipOval(
+                    //                             child: Image.asset(
+                    //                               'asset/contact.png',
+                    //                               fit: BoxFit.cover,
+                    //                             ),
+                    //                           ),
+                    //                         ),
+                    //                         onTap: () {
+                    //                           Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileContact(firstName, lastName, email, avatar)));
+                    //                         },
+                    //                       ),
+                    //                 trailing: IconButton(
+                    //                   onPressed: () {
+                    //                     sendEmail(email);
+                    //                   },
+                    //                   icon: const Icon(Icons.send),
+                    //                   color: mainColor,
+                    //                 ),
+                    //               ));
+                    //         },
+                    //       );
+                    //     },
+                    //     loading: () {
+                    //       return const Center(
+                    //         child: CircularProgressIndicator(),
+                    //       );
+                    //     },
+                    //     error: (error, stack) {
+                    //       return Center(
+                    //         child: Text('Error: $error'),
+                    //       );
+                    //     },
+                    //   ),
+                    // ),

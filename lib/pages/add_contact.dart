@@ -21,76 +21,118 @@ class AddContact extends StatelessWidget {
         centerTitle: true,
         title: const Text('Profile'),
         leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back_ios_new),
-          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back_ios_new),
+        ),
         backgroundColor: mainColor,
       ),
-      body: Padding(
-        padding: mainScreenPadding,
-        child: Column(
-          children: [
-            SizedBox(
-              width: widthOfMedia,
-              height: heightOfField,
-              child: TextFormField(
-                controller: firstNameController,
-                decoration: const InputDecoration(
-                  label: Text('First Name'),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: mainScreenPadding,
+          child: Column(
+            children: [
+              InkWell(
+                child: Stack(children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.transparent,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'asset/user.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                  hintText: 'First Name',
-                  hintStyle: TextStyle(color: Colors.grey),
-                ),
-                onChanged: (value) {
-                  print(value);
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Stack(children: [
+                      Positioned.fill(
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: mainColor,
+                          ),
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.all(3),
+                        child: Icon(
+                          Icons.upload,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ]),
+                  ),
+                ]),
+                onTap: () {
+                  print('upload');
                 },
               ),
-            ),
-            gapBetweenField,
-            SizedBox(
-              width: widthOfMedia,
-              height: heightOfField,
-              child: TextFormField(
-                controller: lastNameController,
-                decoration: const InputDecoration(
-                  label: Text('Last Name'),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
+              gapBetweenDifferentField,
+              SizedBox(
+                width: widthOfMedia,
+                height: heightOfField,
+                child: TextFormField(
+                  controller: firstNameController,
+                  decoration: const InputDecoration(
+                    label: Text('First Name'),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                    ),
+                    hintText: 'First Name',
+                    hintStyle: TextStyle(color: Colors.grey),
                   ),
-                  hintText: 'Last Name',
-                  hintStyle: TextStyle(color: Colors.grey),
+                  onChanged: (value) {
+                    print(value);
+                  },
                 ),
-                onChanged: (value) {
-                  print(value);
-                },
               ),
-            ),
-            gapBetweenField,
-            SizedBox(
-              width: widthOfMedia,
-              height: heightOfField,
-              child: TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  label: Text('Email'),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
+              gapBetweenField,
+              SizedBox(
+                width: widthOfMedia,
+                height: heightOfField,
+                child: TextFormField(
+                  controller: lastNameController,
+                  decoration: const InputDecoration(
+                    label: Text('Last Name'),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                    ),
+                    hintText: 'Last Name',
+                    hintStyle: TextStyle(color: Colors.grey),
                   ),
-                  hintText: 'Email',
-                  hintStyle: TextStyle(color: Colors.grey),
+                  onChanged: (value) {
+                    print(value);
+                  },
                 ),
-                onChanged: (value) {
-                  print(value);
-                },
               ),
-            ),
-            gapBetweenDifferentField,
-            buttonWidget.roundedButtonWidget('Save', widthOfMedia, () { })
-          ],
+              gapBetweenField,
+              SizedBox(
+                width: widthOfMedia,
+                height: heightOfField,
+                child: TextFormField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    label: Text('Email'),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                    ),
+                    hintText: 'Email',
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
+                  onChanged: (value) {
+                    print(value);
+                  },
+                ),
+              ),
+              gapBetweenDifferentField,
+              buttonWidget.roundedButtonWidget('Save', widthOfMedia, () {})
+            ],
+          ),
         ),
       ),
     );

@@ -8,7 +8,7 @@ class EditContact extends StatelessWidget {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  
+
   final String firstName;
   final String lastName;
   final String email;
@@ -29,137 +29,137 @@ class EditContact extends StatelessWidget {
         centerTitle: true,
         title: const Text('Profile'),
         leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back_ios_new),
-          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back_ios_new),
+        ),
         backgroundColor: mainColor,
       ),
-      body: Padding(
-        padding: mainScreenPadding,
-        child: Column(
-          children: [
-            avatar != '' 
-            ? Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.transparent,
-                    child: ClipOval(
-                      child: Image.network(
-                        avatar,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: mainColor,
-                          width: 3.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Stack(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: mainScreenPadding,
+          child: Column(
+            children: [
+              avatar != ''
+                  ? Stack(
                       children: [
-                        Positioned.fill(
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: mainColor,                            
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.transparent,
+                          child: ClipOval(
+                            child: Image.network(
+                              avatar,
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.all(3),
-                          child: Icon(
-                            Icons.edit_sharp, 
-                            color: Colors.white,
-                            size: 20,
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: mainColor,
+                                width: 3.0,
+                              ),
+                            ),
                           ),
-                        ),                        
-                      ]
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Stack(children: [
+                            Positioned.fill(
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: mainColor,
+                                ),
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.all(3),
+                              child: Icon(
+                                Icons.edit_sharp,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ]),
+                        ),
+                      ],
+                    )
+                  : CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.transparent,
+                      child: ClipOval(
+                        child: Image.asset(
+                          'asset/contact.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
+              gapBetweenDifferentField,
+              SizedBox(
+                width: widthOfMedia,
+                height: heightOfField,
+                child: TextFormField(
+                  controller: firstNameController,
+                  decoration: const InputDecoration(
+                    label: Text('First Name'),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                    ),
+                    hintText: 'First Name',
+                    hintStyle: TextStyle(color: Colors.grey),
                   ),
-                ],
-              )
-            : CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.transparent,
-              child: ClipOval(
-                child: Image.asset(
-                  'asset/contact.png',
-                  fit: BoxFit.cover,
+                  onChanged: (value) {
+                    print(value);
+                  },
                 ),
               ),
-            ),
-            gapBetweenDifferentField,
-            SizedBox(
-              width: widthOfMedia,
-              height: heightOfField,
-              child: TextFormField(
-                controller: firstNameController,
-                decoration: const InputDecoration(
-                  label: Text('First Name'),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
+              gapBetweenField,
+              SizedBox(
+                width: widthOfMedia,
+                height: heightOfField,
+                child: TextFormField(
+                  controller: lastNameController,
+                  decoration: const InputDecoration(
+                    label: Text('Last Name'),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                    ),
+                    hintText: 'Last Name',
+                    hintStyle: TextStyle(color: Colors.grey),
                   ),
-                  hintText: 'First Name',
-                  hintStyle: TextStyle(color: Colors.grey),
+                  onChanged: (value) {
+                    print(value);
+                  },
                 ),
-                onChanged: (value) {
-                  print(value);
-                },
               ),
-            ),
-            gapBetweenField,
-            SizedBox(
-              width: widthOfMedia,
-              height: heightOfField,
-              child: TextFormField(
-                controller: lastNameController,
-                decoration: const InputDecoration(
-                  label: Text('Last Name'),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
+              gapBetweenField,
+              SizedBox(
+                width: widthOfMedia,
+                height: heightOfField,
+                child: TextFormField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    label: Text('Email'),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                    ),
+                    hintText: 'Email',
+                    hintStyle: TextStyle(color: Colors.grey),
                   ),
-                  hintText: 'Last Name',
-                  hintStyle: TextStyle(color: Colors.grey),
+                  onChanged: (value) {
+                    print(value);
+                  },
                 ),
-                onChanged: (value) {
-                  print(value);
-                },
               ),
-            ),
-            gapBetweenField,
-            SizedBox(
-              width: widthOfMedia,
-              height: heightOfField,
-              child: TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  label: Text('Email'),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50)),
-                  ),
-                  hintText: 'Email',
-                  hintStyle: TextStyle(color: Colors.grey),
-                ),
-                onChanged: (value) {
-                  print(value);
-                },
-              ),
-            ),
-            gapBetweenDifferentField,
-            buttonWidget.roundedButtonWidget('Done', widthOfMedia, () { })
-          ],
+              gapBetweenDifferentField,
+              buttonWidget.roundedButtonWidget('Done', widthOfMedia, () {})
+            ],
+          ),
         ),
       ),
     );
