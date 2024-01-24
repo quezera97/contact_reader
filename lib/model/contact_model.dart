@@ -29,8 +29,11 @@ class ContactModel {
   }
 
   factory ContactModel.fromContact(Contact contact) {
+    int idFromContact = int.parse(contact.id);
+    int toBeUniqueId = 9000000000;
+
     return ContactModel(
-      id: null,
+      id: (idFromContact + toBeUniqueId),
       email: '',
       firstName: contact.displayName,
       lastName: '',
@@ -43,8 +46,8 @@ class ContactModel {
     return {
       'id': id,
       'email': email ?? '',
-      'first_name': firstName,
-      'last_name': lastName,
+      'first_name': firstName ?? '',
+      'last_name': lastName ?? '',
       'avatar': avatar ?? '',
       'favorited': favorited ?? 0,
     };

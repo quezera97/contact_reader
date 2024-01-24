@@ -64,8 +64,12 @@ class _MyContactState extends ConsumerState<MyContact> {
         actions: [
           IconButton(
             onPressed: () async {
-              await DatabaseHelper.clearAllContacts();
-              await initData();
+              try {
+                await DatabaseHelper.clearAllContacts();
+                await initData();
+              } catch (e) {
+                print('Error: $e');
+              }
             },
             icon: const Icon(Icons.refresh),
           ),

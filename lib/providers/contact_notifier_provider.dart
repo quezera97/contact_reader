@@ -27,7 +27,7 @@ class ContactProvider extends StateNotifier<List<ContactModel>> {
     state = [];
   }
 
-  void removeContactsProvider(int? contactId) {
+  void removeContactsProvider(dynamic? contactId) {
     state = state.where((contact) => contact.id != contactId).toList();
   }
 }

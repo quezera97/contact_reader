@@ -26,6 +26,7 @@ class ContactService {
         allContact.addAll(contactModels);
       }
 
+      await DatabaseHelper.clearAllContacts();
       for (var contact in allContact) {
         await DatabaseHelper.addContact(contact);
       }
