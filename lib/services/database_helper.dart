@@ -8,7 +8,9 @@ class DatabaseHelper {
   static const String _dbName = "Contact.db";
 
   static Future<Database> _getDB() async {
-    return openDatabase(join(await getDatabasesPath(), _dbName), onCreate: (db, version) async => await db.execute("CREATE TABLE Contact(id INTEGER PRIMARY KEY, first_name TEXT, last_name TEXT, email TEXT, avatar TEXT);"), version: _version);
+    return openDatabase(join(await getDatabasesPath(), _dbName), onCreate: (db, version) async => 
+      await db.execute("CREATE TABLE Contact(id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, last_name TEXT, email TEXT, avatar TEXT, favorited INTEGER);"), 
+      version: _version);
   }
 
   static Future<void> clearAllContacts() async {

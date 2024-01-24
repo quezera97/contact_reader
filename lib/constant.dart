@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 //padding
-const mainScreenPadding = EdgeInsets.all(16.0);
+const mainScreenPadding = EdgeInsets.all(15.0);
 //color
 const mainColor = Color.fromARGB(255, 10, 188, 170);
 const textColor = Color.fromARGB(255, 255, 255, 255);

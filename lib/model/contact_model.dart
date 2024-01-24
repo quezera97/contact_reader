@@ -4,6 +4,7 @@ class ContactModel {
   String? firstName;
   String? lastName;
   String? avatar;
+  int? favorited;
 
   ContactModel({
     this.id,
@@ -11,6 +12,7 @@ class ContactModel {
     this.firstName,
     this.lastName,
     this.avatar,
+    this.favorited,
   });
 
   factory ContactModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class ContactModel {
       firstName: json['first_name'],
       lastName: json['last_name'],
       avatar: json['avatar'],
+      favorited: json['favorited'] ?? 0,
     );
   }
 
@@ -30,11 +33,12 @@ class ContactModel {
       'first_name': firstName,
       'last_name': lastName,
       'avatar': avatar,
+      'favorited': favorited ?? 0,
     };
   }
 
   @override
   String toString() {
-    return 'ContactModel{id: $id, email: $email, firstName: $firstName, lastName: $lastName, avatar: $avatar}';
+    return 'ContactModel{id: $id, email: $email, firstName: $firstName, lastName: $lastName, avatar: $avatar, favorited: $favorited}';
   }
 }

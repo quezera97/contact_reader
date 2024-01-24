@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hoi_system_assessment/widgets/button.dart';
 
 import '../constant.dart';
+import '../model/contact_model.dart';
+import '../providers/contact_notifier_provider.dart';
+import '../services/database_helper.dart';
+import '../widgets/toast.dart';
 
-class AddContact extends StatelessWidget {
+class AddContact extends ConsumerWidget {
   AddContact({super.key});
 
   final buttonWidget = ButtonWidget();
@@ -13,7 +18,7 @@ class AddContact extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final widthOfMedia = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -130,7 +135,20 @@ class AddContact extends StatelessWidget {
                 ),
               ),
               gapBetweenDifferentField,
-              buttonWidget.roundedButtonWidget('Save', widthOfMedia, () {})
+              buttonWidget.roundedButtonWidget('Save', widthOfMedia, () async {
+                ContactModel editedContact = ContactModel(
+                  email: emailController.text,
+                  firstName: firstNameController.text,
+                  lastName: lastNameController.text,
+                  avatar: 'https://reqres.in/img/faces/6-image.jpg',
+                );
+
+                await DatabaseHelper.addContact(editedContact);
+
+                ref.read(contactProvider.notifier).addContactsProvider(editedContact);
+
+                ToastHelper.showToast(message: 'Contact successfully added');
+              })
             ],
           ),
         ),

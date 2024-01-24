@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hoi_system_assessment/widgets/button.dart';
 
 import '../constant.dart';
+import '../model/contact_model.dart';
+import '../providers/contact_notifier_provider.dart';
 import 'edit_contact.dart';
-
-class ProfileContact extends StatelessWidget {
+class ProfileContact extends ConsumerWidget {
   final buttonWidget = ButtonWidget();
-  final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
 
-  late final String firstName;
-  final String lastName;
-  final String email;
-  late final String avatar;
+  final ContactModel contact;
 
-  ProfileContact(this.firstName, this.lastName, this.email, this.avatar, {super.key}) {
-    lastNameController.text = lastName;
-    emailController.text = email;
-  }
+  ProfileContact(this.contact, {super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final widthOfMedia = MediaQuery.of(context).size.width;
+
+    final allContacts = ref.watch(contactProvider);
+    ContactModel watchedContact = allContacts.firstWhere((ctx) => ctx.id == contact.id);
+
+    String firstName = watchedContact.firstName ?? '';
+    String lastName = watchedContact.lastName ?? '';
+    String email = watchedContact.email ?? '';
+    String avatar = watchedContact.avatar ?? '';
+    int favorited = watchedContact.favorited ?? 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -46,7 +49,7 @@ class ProfileContact extends StatelessWidget {
                   InkWell(
                     child: const Text('Edit', style: TextStyle(color: mainColor)),
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditContact(firstName, lastName, email, avatar)));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditContact(contact)));
                     },
                   ),
                 ],
@@ -80,53 +83,62 @@ class ProfileContact extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                                size: 30,
-                              ),
-                            ),
+                            if(favorited == 1) ... [
+                              const Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                  size: 30,
+                                ),
+                             ),
+                            ]
                           ],
                         ),
                         normalGap,
-                        Text(firstName, style: normalTextStyle),
+                        Text('$firstName $lastName', style: normalTextStyle),
                       ],
                     )
                   : Column(
                       children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.transparent,
-                          child: ClipOval(
-                            child: Image.asset(
-                              'asset/contact.png',
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned.fill(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: mainColor,
-                                width: 3.0,
+                        Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 50,
+                              backgroundColor: Colors.transparent,
+                              child: ClipOval(
+                                child: Image.asset(
+                                  'asset/user.png',
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                          ),
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: mainColor,
+                                    width: 3.0,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if(favorited == 1) ... [
+                              const Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                  size: 30,
+                                ),
+                             ),
+                            ]
+                          ],
                         ),
-                        const Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                            size: 30,
-                          ),
-                        ),
+                        
                         normalGap,
                         Text(firstName, style: normalTextStyle),
                       ],
