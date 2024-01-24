@@ -7,6 +7,7 @@ final contactService = ContactService();
 final getAllContactProvider = FutureProvider<List<ContactModel>>((ref) async {
   try {
     List<ContactModel> users = await contactService.getAllUsers();
+
     return users;
   } catch (error) {
     print('Error fetching users: $error');

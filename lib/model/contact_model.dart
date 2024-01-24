@@ -1,3 +1,5 @@
+import 'package:flutter_contacts/flutter_contacts.dart';
+
 class ContactModel {
   int? id;
   String? email;
@@ -18,27 +20,47 @@ class ContactModel {
   factory ContactModel.fromJson(Map<String, dynamic> json) {
     return ContactModel(
       id: json['id'],
-      email: json['email'],
+      email: json['email'] ?? '',
       firstName: json['first_name'],
       lastName: json['last_name'],
-      avatar: json['avatar'],
+      avatar: json['avatar'] ?? '',
       favorited: json['favorited'] ?? 0,
+    );
+  }
+
+  factory ContactModel.fromContact(Contact contact) {
+    return ContactModel(
+      id: null,
+      email: '',
+      firstName: contact.displayName,
+      lastName: '',
+      avatar: '',
+      favorited: contact.isStarred == true ? 1 : 0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'email': email,
+      'email': email ?? '',
       'first_name': firstName,
       'last_name': lastName,
-      'avatar': avatar,
+      'avatar': avatar ?? '',
       'favorited': favorited ?? 0,
     };
   }
 
   @override
   String toString() {
-    return 'ContactModel{id: $id, email: $email, firstName: $firstName, lastName: $lastName, avatar: $avatar, favorited: $favorited}';
+    return '''
+      ContactModel{
+        id: $id, 
+        email: $email, 
+        firstName: $firstName, 
+        lastName: $lastName, 
+        avatar: $avatar, 
+        favorited: $favorited,
+      }
+    ''';
   }
 }

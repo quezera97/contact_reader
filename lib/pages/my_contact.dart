@@ -1,8 +1,10 @@
+// import 'dart:html';
+
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:gap/gap.dart';
 
 import '../constant.dart';
 import '../model/contact_model.dart';
@@ -10,7 +12,6 @@ import '../providers/contact_notifier_provider.dart';
 import '../providers/contact_provider.dart';
 
 import '../services/database_helper.dart';
-// import '../services/mail_services.dart';
 import '../services/mail_services.dart';
 import '../widgets/button.dart';
 import '../widgets/confirmation_pop_up.dart';
@@ -34,7 +35,6 @@ class _MyContactState extends ConsumerState<MyContact> {
   @override
   void initState() {
     super.initState();
-
     initData();
   }
 
@@ -389,109 +389,3 @@ class _MyContactState extends ConsumerState<MyContact> {
     );
   }
 }
-
-
-// Container(
-                    //   child: allContact.when(
-                    //     data: (users) {
-                    //       return ListView.builder(
-                    //         itemCount: users.length,
-                    //         itemBuilder: (context, index) {
-                    //           ContactModel contact = users[index];
-                    //           String avatar = contact.avatar ?? '';
-                    //           String firstName = contact.firstName ?? '';
-                    //           String lastName = contact.lastName ?? '';
-                    //           String email = contact.email ?? '';
-                    //           String fullName = '$firstName $lastName';
-
-                    //           if (searchedValue.isNotEmpty && !fullName.toLowerCase().contains(searchedValue.toLowerCase())) {
-                    //             return Container();
-                    //           }
-
-                    //           return Slidable(
-                    //               endActionPane: ActionPane(
-                    //                 motion: const BehindMotion(),
-                    //                 children: [
-                    //                   SlidableAction(
-                    //                     onPressed: (context) {
-                    //                       Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditContact(firstName, lastName, email, avatar)));
-                    //                     },
-                    //                     foregroundColor: Colors.blue,
-                    //                     icon: Icons.edit,
-                    //                   ),
-                    //                   SlidableAction(
-                    //                     onPressed: (context) {
-                    //                       showDialog(
-                    //                         context: context,
-                    //                         builder: (BuildContext context) {
-                    //                           return ConfirmationPopUp(
-                    //                             contentAlert: 'Are you sure you want to delete this contact?',
-                    //                             onConfirm: () {
-                    //                               print('asd');
-                    //                             },
-                    //                           );
-                    //                         },
-                    //                       );
-                    //                     },
-                    //                     foregroundColor: Colors.red,
-                    //                     icon: Icons.delete,
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //               child: ListTile(
-                    //                 title: Text(fullName),
-                    //                 subtitle: Text(email),
-                    //                 leading: avatar != ''
-                    //                     ? InkWell(
-                    //                         child: CircleAvatar(
-                    //                           radius: 25,
-                    //                           backgroundColor: Colors.transparent,
-                    //                           child: ClipOval(
-                    //                             child: Image.network(
-                    //                               avatar,
-                    //                               fit: BoxFit.cover,
-                    //                             ),
-                    //                           ),
-                    //                         ),
-                    //                         onTap: () {
-                    //                           Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileContact(firstName, lastName, email, avatar)));
-                    //                         },
-                    //                       )
-                    //                     : InkWell(
-                    //                         child: CircleAvatar(
-                    //                           radius: 25,
-                    //                           backgroundColor: Colors.transparent,
-                    //                           child: ClipOval(
-                    //                             child: Image.asset(
-                    //                               'asset/contact.png',
-                    //                               fit: BoxFit.cover,
-                    //                             ),
-                    //                           ),
-                    //                         ),
-                    //                         onTap: () {
-                    //                           Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileContact(firstName, lastName, email, avatar)));
-                    //                         },
-                    //                       ),
-                    //                 trailing: IconButton(
-                    //                   onPressed: () {
-                    //                     sendEmail(email);
-                    //                   },
-                    //                   icon: const Icon(Icons.send),
-                    //                   color: mainColor,
-                    //                 ),
-                    //               ));
-                    //         },
-                    //       );
-                    //     },
-                    //     loading: () {
-                    //       return const Center(
-                    //         child: CircularProgressIndicator(),
-                    //       );
-                    //     },
-                    //     error: (error, stack) {
-                    //       return Center(
-                    //         child: Text('Error: $error'),
-                    //       );
-                    //     },
-                    //   ),
-                    // ),
