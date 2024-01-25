@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hoi_system_assessment/widgets/button.dart';
+import 'package:contact_reader/widgets/button.dart';
 
 import '../constant.dart';
 import '../model/contact_model.dart';

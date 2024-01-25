@@ -1,4 +1,4 @@
-package com.example.hoi_system_assessment
+package com.example.contact_reader
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:hoi_system_assessment/services/database_helper.dart';
+import 'package:contact_reader/services/database_helper.dart';
 import 'package:http/http.dart' as http;
 
 import '../model/contact_model.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hoi_system_assessment/constant.dart';
+import 'package:contact_reader/constant.dart';
 
 class ConfirmationPopUp extends StatelessWidget {
   final String? titleAlert;
