@@ -14,9 +14,7 @@ class ContactProvider extends StateNotifier<List<ContactModel>> {
   }
 
   void updateContactProvider(ContactModel updatedContact) {
-    state = state.map((contact) =>
-      contact.id == updatedContact.id ? updatedContact : contact
-    ).toList();
+    state = state.map((contact) => contact.id == updatedContact.id ? updatedContact : contact).toList();
   }
 
   void addContactsProvider(ContactModel contact) {
@@ -27,7 +25,7 @@ class ContactProvider extends StateNotifier<List<ContactModel>> {
     state = [];
   }
 
-  void removeContactsProvider(dynamic? contactId) {
+  void removeContactsProvider(dynamic contactId) {
     state = state.where((contact) => contact.id != contactId).toList();
   }
 }

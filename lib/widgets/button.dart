@@ -18,7 +18,7 @@ class ButtonWidget {
         child: Text(
           textButton,
           style: const TextStyle(
-            color: textColor,
+            color: whiteColor,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -38,7 +38,7 @@ class ButtonWidget {
         child: Text(
           textButton,
           style: const TextStyle(
-            color:Colors.white, // Set text color
+            color: whiteColor, // Set text color
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),

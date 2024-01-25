@@ -54,9 +54,7 @@ class EditContact extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   InkWell(
-                    child: favorited == 1 
-                    ? const Text('Remove From Fav', style: TextStyle(color: mainColor))
-                    : const Text('Add To Fav', style: TextStyle(color: mainColor)),
+                    child: favorited == 1 ? const Text('Remove From Fav', style: TextStyle(color: mainColor)) : const Text('Add To Fav', style: TextStyle(color: mainColor)),
                     onTap: () async {
                       ContactModel editedContact = ContactModel(
                         id: contact.id,
@@ -71,9 +69,7 @@ class EditContact extends ConsumerWidget {
 
                       ref.read(contactProvider.notifier).updateContactProvider(editedContact);
 
-                      favorited == 1 
-                      ? ToastHelper.showToast(message: 'Contact removed from favorite')
-                      : ToastHelper.showToast(message: 'Contact added to favorite');
+                      favorited == 1 ? ToastHelper.showToast(message: 'Contact removed from favorite') : ToastHelper.showToast(message: 'Contact added to favorite');
                     },
                   ),
                 ],
@@ -118,7 +114,7 @@ class EditContact extends ConsumerWidget {
                               padding: EdgeInsets.all(3),
                               child: Icon(
                                 Icons.edit_sharp,
-                                color: Colors.white,
+                                color: whiteColor,
                                 size: 20,
                               ),
                             ),
@@ -127,8 +123,8 @@ class EditContact extends ConsumerWidget {
                       ],
                     )
                   : Stack(
-                    children: [
-                      CircleAvatar(
+                      children: [
+                        CircleAvatar(
                           radius: 50,
                           backgroundColor: Colors.transparent,
                           child: ClipOval(
@@ -165,14 +161,14 @@ class EditContact extends ConsumerWidget {
                               padding: EdgeInsets.all(3),
                               child: Icon(
                                 Icons.edit_sharp,
-                                color: Colors.white,
+                                color: whiteColor,
                                 size: 20,
                               ),
                             ),
                           ]),
                         ),
-                    ],
-                  ),
+                      ],
+                    ),
               gapBetweenDifferentField,
               SizedBox(
                 width: widthOfMedia,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'pages/my_contact.dart';
+import 'pages/splash_screen.dart';
 
 void main() {
   runApp(const ProviderScope(
@@ -16,11 +16,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Hoi System Assessment',
-      debugShowCheckedModeBanner: false, 
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyContact(),
+      home: SplashScreen(),
     );
   }
 }

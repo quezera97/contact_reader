@@ -8,7 +8,7 @@ Widget fabWidget(BuildContext context, Widget destinationRoute) {
       Navigator.of(context).push(MaterialPageRoute(builder: (context) => destinationRoute));
     },
     shape: const CircleBorder(),
-    foregroundColor: textColor,
+    foregroundColor: whiteColor,
     backgroundColor: mainColor,
     child: const Icon(Icons.add),
   );

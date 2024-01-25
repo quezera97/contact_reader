@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:contact_reader/constant.dart';
 
+import 'text_style.dart';
+
 class ConfirmationPopUp extends StatelessWidget {
   final String? titleAlert;
   final String? contentAlert;
@@ -21,7 +23,9 @@ class ConfirmationPopUp extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(contentAlert ?? '', style: titleTextStyle, textAlign: TextAlign.center),
+          Text(titleAlert ?? '', textAlign: TextAlign.center, style: labelTextStyle(bold: true, color: blackColor, size: 18, spacing: 1.1)),
+          titleAlert == '' ? const SizedBox(height: 0) : normalGap,
+          Text(contentAlert ?? '', textAlign: TextAlign.center, style: labelTextStyle(bold: false, color: blackColor, size: 15, spacing: 1)),
           gapBetweenDifferentField,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

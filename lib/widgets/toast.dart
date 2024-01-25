@@ -14,7 +14,7 @@ class ToastHelper {
     ToastGravity gravity = ToastGravity.TOP_RIGHT,
     int timeInSecForIosWeb = 1,
     Color backgroundColor = mainColor,
-    Color textColor = Colors.white,
+    Color whiteColor = whiteColor,
     double fontSize = 16.0,
   }) {
     if (isShowingToast) {
@@ -27,7 +27,7 @@ class ToastHelper {
       gravity: gravity,
       timeInSecForIosWeb: timeInSecForIosWeb,
       backgroundColor: backgroundColor,
-      textColor: textColor,
+      textColor: whiteColor,
       fontSize: fontSize,
     );
 
@@ -38,4 +38,3 @@ class ToastHelper {
     });
   }
 }
-

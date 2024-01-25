@@ -66,7 +66,7 @@ class AddContact extends ConsumerWidget {
                         padding: EdgeInsets.all(3),
                         child: Icon(
                           Icons.upload,
-                          color: Colors.white,
+                          color: whiteColor,
                           size: 20,
                         ),
                       ),

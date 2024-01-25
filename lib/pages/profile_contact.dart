@@ -5,7 +5,9 @@ import 'package:contact_reader/widgets/button.dart';
 import '../constant.dart';
 import '../model/contact_model.dart';
 import '../providers/contact_notifier_provider.dart';
+import '../widgets/text_style.dart';
 import 'edit_contact.dart';
+
 class ProfileContact extends ConsumerWidget {
   final buttonWidget = ButtonWidget();
 
@@ -83,7 +85,7 @@ class ProfileContact extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                            if(favorited == 1) ... [
+                            if (favorited == 1) ...[
                               const Positioned(
                                 bottom: 0,
                                 right: 0,
@@ -92,12 +94,12 @@ class ProfileContact extends ConsumerWidget {
                                   color: Colors.amber,
                                   size: 30,
                                 ),
-                             ),
+                              ),
                             ]
                           ],
                         ),
                         normalGap,
-                        Text('$firstName $lastName', style: normalTextStyle),
+                        Text('$firstName $lastName', style: labelTextStyle(color: whiteColor, bold: false, size: 15, spacing: 1)),
                       ],
                     )
                   : Column(
@@ -125,7 +127,7 @@ class ProfileContact extends ConsumerWidget {
                                 ),
                               ),
                             ),
-                            if(favorited == 1) ... [
+                            if (favorited == 1) ...[
                               const Positioned(
                                 bottom: 0,
                                 right: 0,
@@ -134,13 +136,12 @@ class ProfileContact extends ConsumerWidget {
                                   color: Colors.amber,
                                   size: 30,
                                 ),
-                             ),
+                              ),
                             ]
                           ],
                         ),
-                        
                         normalGap,
-                        Text(firstName, style: normalTextStyle),
+                        Text(firstName, style: labelTextStyle(color: whiteColor, bold: false, size: 15, spacing: 1)),
                       ],
                     ),
             ),
@@ -154,10 +155,10 @@ class ProfileContact extends ConsumerWidget {
                   children: [
                     const Icon(
                       Icons.email,
-                      color: Colors.white,
+                      color: whiteColor,
                       size: 36.0,
                     ),
-                    Text(email, style: normalTextStyle),
+                    Text(email, style: labelTextStyle(color: whiteColor, bold: false, size: 15, spacing: 1)),
                   ],
                 ),
                 onTap: () {

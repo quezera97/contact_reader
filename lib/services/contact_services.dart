@@ -7,33 +7,58 @@ import '../model/contact_model.dart';
 
 class ContactService {
   String allUserUrl = 'https://reqres.in/api/users';
+  bool permissionGranted = false;
 
-  Future<List<ContactModel>> getAllUsers() async {
+  Future getAllContactService(bool permission) async {
+    permissionGranted = permission;
+
+    try {
+      List<ContactModel> allContacts = [];
+
+      List<ContactModel> apiContacts = await getApiContacts();
+      allContacts.addAll(apiContacts);
+      List<ContactModel> localContacts = await getLocalContact();
+      allContacts.addAll(localContacts);
+
+      return allContacts;
+    } catch (error) {
+      print('Error fetching users: $error');
+      return [];
+    }
+  }
+
+  Future<List<ContactModel>> getLocalContact() async {
+    List<ContactModel> localContactsModel = [];
+
+    if (permissionGranted == true) {
+      List<Contact> localContacts = await FlutterContacts.getContacts();
+      localContactsModel = localContacts.map((contact) => ContactModel.fromContact(contact)).toList();
+
+      for (var contact in localContactsModel) {
+        await DatabaseHelper.addContact(contact);
+      }
+    }
+
+    return localContactsModel;
+  }
+
+  Future<List<ContactModel>> getApiContacts() async {
+    List<ContactModel> apiContacts = [];
     var response = await http.get(Uri.parse(allUserUrl));
 
     if (response.statusCode == 200) {
       final List<dynamic> result = jsonDecode(response.body)['data'];
 
-      List<ContactModel> allContact = [];
-      List<ContactModel> contactList = result.map((contactJson) => ContactModel.fromJson(contactJson)).toList();
-      if(contactList.isNotEmpty || contactList != []){
-        allContact.addAll(contactList);
-      }
+      apiContacts = result.map((contactJson) => ContactModel.fromJson(contactJson)).toList();
 
-      List<Contact> localContacts = await FlutterContacts.getContacts();
-      List<ContactModel> contactModels = localContacts.map((contact) => ContactModel.fromContact(contact)).toList();
-      if(localContacts.isNotEmpty || localContacts != []){
-        allContact.addAll(contactModels);
-      }
-
-      await DatabaseHelper.clearAllContacts();
-      for (var contact in allContact) {
+      // await DatabaseHelper.clearAllContacts();
+      for (var contact in apiContacts) {
         await DatabaseHelper.addContact(contact);
       }
 
-      return allContact;
+      return apiContacts;
     } else {
-      throw Exception(response.reasonPhrase);
+      return [];
     }
   }
 }
