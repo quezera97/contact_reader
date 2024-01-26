@@ -33,15 +33,15 @@ class ConfirmationPopUp extends StatelessWidget {
               TextButton(
                 child: const Text('Yes', style: TextStyle(color: Colors.red, fontSize: 20)),
                 onPressed: () {
-                  onConfirm?.call();
                   Navigator.of(context).pop();
+                  onConfirm?.call();
                 },
               ),
               TextButton(
                 child: const Text('No', style: TextStyle(fontSize: 20)),
                 onPressed: () {
-                  onClosed?.call();
                   Navigator.of(context).pop();
+                  onClosed?.call();
                 },
               ),
             ],

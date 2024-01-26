@@ -8,9 +8,7 @@ class DatabaseHelper {
   static const String _dbName = "Contact.db";
 
   static Future<Database> _getDB() async {
-    return openDatabase(join(await getDatabasesPath(), _dbName), onCreate: (db, version) async => 
-      await db.execute("CREATE TABLE Contact(id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, last_name TEXT, email TEXT, avatar TEXT, favorited INTEGER);"), 
-      version: _version);
+    return openDatabase(join(await getDatabasesPath(), _dbName), onCreate: (db, version) async => await db.execute("CREATE TABLE Contact(id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, last_name TEXT, email TEXT, avatar TEXT, favorited INTEGER);"), version: _version);
   }
 
   static Future<void> clearAllContacts() async {
@@ -18,9 +16,27 @@ class DatabaseHelper {
     await db.delete("Contact");
   }
 
+  // static Future<int> addContact(ContactModel contact) async {
+  //   final db = await _getDB();
+  //   return await db.insert("Contact", contact.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+  // }
+
   static Future<int> addContact(ContactModel contact) async {
     final db = await _getDB();
-    return await db.insert("Contact", contact.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+
+    final existingContacts = await db.query(
+      'Contact',
+      where: 'first_name = ? AND last_name = ?',
+      whereArgs: [contact.firstName, contact.lastName],
+    );
+
+    print(existingContacts);
+
+    if (existingContacts.isNotEmpty) {
+      return -1;
+    } else {
+      return await db.insert('Contact', contact.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
+    }
   }
 
   static Future<int> updateContact(ContactModel contact) async {

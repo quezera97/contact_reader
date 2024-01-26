@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constant.dart';
+import 'image_widget.dart';
 
 class ListTileContactWidget extends StatelessWidget {
   final String? title;
@@ -40,7 +41,7 @@ class ListTileContactWidget extends StatelessWidget {
           radius: 25,
           backgroundColor: Colors.transparent,
           child: ClipOval(
-            child: getImageWidget(),
+            child: getImageWidget(imageUrl),
           ),
         ),
         onTap: () {
@@ -54,29 +55,6 @@ class ListTileContactWidget extends StatelessWidget {
         icon: const Icon(Icons.send),
         color: mainColor,
       ),
-    );
-  }
-
-  Widget getImageWidget() {
-    if (imageUrl != null) {
-      if (imageUrl!.startsWith('http') || imageUrl!.contains('http') || imageUrl!.contains('.co')) {
-        try {
-          return Image.network(
-            imageUrl!,
-            fit: BoxFit.cover,
-          );
-        } catch (e) {
-          return Image.asset(
-            'asset/user.png',
-            fit: BoxFit.cover,
-          );
-        }
-      }
-    }
-
-    return Image.asset(
-      'asset/user.png',
-      fit: BoxFit.cover,
     );
   }
 }

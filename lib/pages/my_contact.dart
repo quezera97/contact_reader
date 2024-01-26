@@ -4,6 +4,7 @@ import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:is_first_run/is_first_run.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,6 +12,7 @@ import '../constant.dart';
 import '../model/contact_model.dart';
 import '../providers/contact_notifier_provider.dart';
 
+import '../providers/searched_value_provider.dart';
 import '../services/contact_services.dart';
 import '../services/database_helper.dart';
 import '../services/mail_services.dart';
@@ -32,73 +34,115 @@ class MyContact extends ConsumerStatefulWidget {
 
 class _MyContactState extends ConsumerState<MyContact> {
   final buttonWidget = ButtonWidget();
-  String searchedValue = '';
   late List<ContactModel> allContactDB = [];
+  late String searchedValue = '';
   final contactService = ContactService();
-  bool permissionGranted = false;
   late SharedPreferences prefs;
+  bool statusIsGranted = false;
 
   @override
   void initState() {
     super.initState();
     _initialRequest();
+
+    ref.read(searchedValueProvider.notifier).setSearchedValueProvider('');
   }
 
   _initialRequest() async {
     prefs = await SharedPreferences.getInstance();
-    await _requestContactsPermission();
+    bool isFirstRunAfterInstall = await _checkFirstRunApp();
+    await _requestContactsPermission(requestSync: false, isFromReset: false, isFirstRunAfterInstall: isFirstRunAfterInstall);
   }
 
-  Future<void> _requestContactsPermission() async {
+  Future<bool> _checkFirstRunApp() async {
+    bool firstRun = await IsFirstRun.isFirstRun();
+    return firstRun;
+  }
+
+  Future<void> _requestContactsPermission({
+    required bool requestSync,
+    required bool isFromReset,
+    required bool isFirstRunAfterInstall,
+  }) async {
     var status = await Permission.contacts.status;
-    if (status.isDenied) {
-      await prefs.setBool('permission_denied', true);
-    } else {
-      await prefs.setBool('permission_denied', false);
+
+    if (status.isPermanentlyDenied && requestSync == true && isFromReset == false) {
+      _manualPermission();
+      return;
     }
 
-    await _getPermission();
+    status = await Permission.contacts.request();
+
+    statusIsGranted = status.isGranted;
+
+    if (requestSync == false && isFromReset == false && isFirstRunAfterInstall == false) {
+      //regular sync contact
+      _regularSync(statusIsGranted);
+      return;
+    }
+
+    if (statusIsGranted) {
+      if (isFromReset == true || isFirstRunAfterInstall == true) {
+        //reset contact  with allow permission
+        //first time install with allow permission
+        _resetContact(statusIsGranted);
+        return;
+      }
+
+      if (requestSync == true) {
+        //request sync loacal contact
+        _syncLocalContact();
+      }
+    } else if (status.isPermanentlyDenied || status.isDenied) {
+      statusIsGranted = false;
+
+      if (isFromReset == true) {
+        //reset contact  with not allow permission
+        _resetContact(statusIsGranted);
+      }
+    }
   }
 
-  _getPermission() async {
-    final bool? isPermissionDenied = prefs.getBool('permission_denied');
+  _regularSync(bool statusIsGranted) async {
+    List<ContactModel> allContact = await DatabaseHelper.getAllContact() ?? [];
 
-    if (isPermissionDenied == true) {
-      permissionGranted = false;
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return ConfirmationPopUp(
-            titleAlert: 'You have denied permission',
-            contentAlert: 'Please manually allow CONTACT permission',
-            onConfirm: () async {
-              openAppSettings();
-            },
-          );
-        },
-      );
-    } else {
-      permissionGranted = true;
+    if (allContact.isEmpty) {
+      allContact = await contactService.getAllContactService(statusIsGranted);
     }
 
-    _initData();
+    ref.read(contactProvider.notifier).setContactsProvider(allContact);
   }
 
-  Future<void> _initData() async {
-    try {
-      List<ContactModel> allContact = await DatabaseHelper.getAllContact() ?? [];
+  _resetContact(bool statusIsGranted) async {
+    List<ContactModel> allContact = await contactService.getAllContactService(statusIsGranted);
+    ref.read(contactProvider.notifier).setContactsProvider(allContact);
+  }
 
-      allContact = await contactService.getAllContactService(permissionGranted);
+  _syncLocalContact() async {
+    List<ContactModel> allContact = await contactService.getAllContactService(true);
+    allContact = await DatabaseHelper.getAllContact() ?? [];
+    ref.read(contactProvider.notifier).setContactsProvider(allContact);
+  }
 
-      ref.read(contactProvider.notifier).setContactsProvider(allContact);
-    } catch (e) {
-      print('Error fetching data: $e');
-    }
+  _manualPermission() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ConfirmationPopUp(
+          titleAlert: 'You have denied permission',
+          contentAlert: 'Please manually allow CONTACT permission',
+          onConfirm: () async {
+            openAppSettings();
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     allContactDB = ref.watch(contactProvider);
+    searchedValue = ref.watch(searchedValueProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -117,8 +161,7 @@ class _MyContactState extends ConsumerState<MyContact> {
                     onConfirm: () async {
                       try {
                         await DatabaseHelper.clearAllContacts();
-                        final allContact = await contactService.getAllContactService(permissionGranted);
-                        ref.read(contactProvider.notifier).setContactsProvider(allContact);
+                        _requestContactsPermission(requestSync: true, isFromReset: true, isFirstRunAfterInstall: false);
                       } catch (e) {
                         print('Error: $e');
                       }
@@ -129,23 +172,25 @@ class _MyContactState extends ConsumerState<MyContact> {
             },
             icon: const Icon(Icons.refresh),
           ),
-          IconButton(
-            onPressed: () async {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return ConfirmationPopUp(
-                    titleAlert: 'This will sync to contacts',
-                    contentAlert: 'Continue?',
-                    onConfirm: () async {
-                      _requestContactsPermission();
-                    },
-                  );
-                },
-              );
-            },
-            icon: const Icon(Icons.contact_page_outlined),
-          ),
+          if (statusIsGranted == false) ...[
+            IconButton(
+              onPressed: () async {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return ConfirmationPopUp(
+                      titleAlert: 'This will sync to contacts',
+                      contentAlert: 'Continue?',
+                      onConfirm: () async {
+                        _requestContactsPermission(requestSync: true, isFromReset: false, isFirstRunAfterInstall: false);
+                      },
+                    );
+                  },
+                );
+              },
+              icon: const Icon(Icons.contact_page_outlined),
+            ),
+          ],
         ],
       ),
       body: Padding(
@@ -164,9 +209,7 @@ class _MyContactState extends ConsumerState<MyContact> {
                       suffixIcon: Icon(Icons.search),
                     ),
                     onChanged: (value) {
-                      setState(() {
-                        searchedValue = value;
-                      });
+                      ref.read(searchedValueProvider.notifier).setSearchedValueProvider(value);
                     },
                   ),
                   gapBetweenDifferentField,

@@ -2,11 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:contact_reader/model/contact_model.dart';
 import 'package:contact_reader/widgets/button.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../constant.dart';
 import '../providers/contact_notifier_provider.dart';
 import '../services/database_helper.dart';
+import '../widgets/image_widget.dart';
 import '../widgets/toast.dart';
+
+Future<String> _uploadImage() async {
+  final ImagePicker picker = ImagePicker();
+  String defaultImage = 'asset/user.png';
+  try {
+    XFile? image = await picker.pickImage(
+      source: ImageSource.camera,
+      maxWidth: 480,
+      maxHeight: 640,
+      imageQuality: 50,
+    );
+    // XFile? image = await picker.pickImage(source: ImageSource.camera);
+    // final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (image == null) {
+      return defaultImage;
+    }
+
+    final imageTemp = image.path;
+    return imageTemp;
+  } catch (e) {
+    return defaultImage;
+  }
+}
 
 class EditContact extends ConsumerWidget {
   final buttonWidget = ButtonWidget();
@@ -15,13 +40,11 @@ class EditContact extends ConsumerWidget {
   final TextEditingController emailController = TextEditingController();
 
   final ContactModel contact;
-  late final String avatar;
 
   EditContact(this.contact, {super.key}) {
     firstNameController.text = contact.firstName ?? '';
     lastNameController.text = contact.lastName ?? '';
     emailController.text = contact.email ?? '';
-    avatar = contact.avatar ?? '';
   }
 
   @override
@@ -32,6 +55,7 @@ class EditContact extends ConsumerWidget {
     ContactModel watchedContact = allContacts.firstWhere((ctx) => ctx.id == contact.id);
 
     int favorited = watchedContact.favorited ?? 0;
+    String uploadedImage = watchedContact.avatar ?? 'asset/user.png';
 
     return Scaffold(
       appBar: AppBar(
@@ -61,7 +85,7 @@ class EditContact extends ConsumerWidget {
                         email: contact.email,
                         firstName: contact.firstName,
                         lastName: contact.lastName,
-                        avatar: contact.avatar,
+                        avatar: uploadedImage,
                         favorited: favorited == 1 ? 0 : 1,
                       );
 
@@ -74,101 +98,68 @@ class EditContact extends ConsumerWidget {
                   ),
                 ],
               ),
-              avatar != ''
-                  ? Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.transparent,
-                          child: ClipOval(
-                            child: Image.network(
-                              avatar,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned.fill(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: mainColor,
-                                width: 3.0,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Stack(children: [
-                            Positioned.fill(
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: mainColor,
-                                ),
-                              ),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(3),
-                              child: Icon(
-                                Icons.edit_sharp,
-                                color: whiteColor,
-                                size: 20,
-                              ),
-                            ),
-                          ]),
-                        ),
-                      ],
-                    )
-                  : Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.transparent,
-                          child: ClipOval(
-                            child: Image.asset(
-                              'asset/user.png',
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned.fill(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: mainColor,
-                                width: 3.0,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Stack(children: [
-                            Positioned.fill(
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: mainColor,
-                                ),
-                              ),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(3),
-                              child: Icon(
-                                Icons.edit_sharp,
-                                color: whiteColor,
-                                size: 20,
-                              ),
-                            ),
-                          ]),
-                        ),
-                      ],
+              InkWell(
+                onTap: () async {
+                  uploadedImage = await _uploadImage();
+
+                  ContactModel editedContact = ContactModel(
+                    id: contact.id,
+                    email: contact.email,
+                    firstName: contact.firstName,
+                    lastName: contact.lastName,
+                    avatar: uploadedImage,
+                    favorited: favorited,
+                  );
+
+                  await DatabaseHelper.updateContact(editedContact);
+
+                  ref.read(contactProvider.notifier).updateContactProvider(editedContact);
+                },
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.transparent,
+                      child: ClipOval(
+                        child: getImageWidget(uploadedImage),
+                      ),
                     ),
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: mainColor,
+                            width: 3.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Stack(children: [
+                        Positioned.fill(
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: mainColor,
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.all(3),
+                          child: Icon(
+                            Icons.edit_sharp,
+                            color: whiteColor,
+                            size: 20,
+                          ),
+                        ),
+                      ]),
+                    ),
+                  ],
+                ),
+              ),
               gapBetweenDifferentField,
               SizedBox(
                 width: widthOfMedia,
@@ -233,7 +224,7 @@ class EditContact extends ConsumerWidget {
                   email: emailController.text,
                   firstName: firstNameController.text,
                   lastName: lastNameController.text,
-                  avatar: contact.avatar,
+                  avatar: uploadedImage,
                   favorited: favorited,
                 );
 

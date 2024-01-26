@@ -5,6 +5,9 @@ import 'package:contact_reader/widgets/button.dart';
 import '../constant.dart';
 import '../model/contact_model.dart';
 import '../providers/contact_notifier_provider.dart';
+import '../services/mail_services.dart';
+import '../widgets/confirmation_pop_up.dart';
+import '../widgets/image_widget.dart';
 import '../widgets/text_style.dart';
 import 'edit_contact.dart';
 
@@ -58,93 +61,46 @@ class ProfileContact extends ConsumerWidget {
               ),
             ),
             Container(
-              padding: mainScreenPadding,
-              child: avatar != ''
-                  ? Column(
+                padding: mainScreenPadding,
+                child: Column(
+                  children: [
+                    Stack(
                       children: [
-                        Stack(
-                          children: [
-                            CircleAvatar(
-                              radius: 50,
-                              backgroundColor: Colors.transparent,
-                              child: ClipOval(
-                                child: Image.network(
-                                  avatar,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Positioned.fill(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: mainColor,
-                                    width: 3.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            if (favorited == 1) ...[
-                              const Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                  size: 30,
-                                ),
-                              ),
-                            ]
-                          ],
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.transparent,
+                          child: ClipOval(
+                            child: getImageWidget(avatar),
+                          ),
                         ),
-                        normalGap,
-                        Text('$firstName $lastName', style: labelTextStyle(color: whiteColor, bold: false, size: 15, spacing: 1)),
-                      ],
-                    )
-                  : Column(
-                      children: [
-                        Stack(
-                          children: [
-                            CircleAvatar(
-                              radius: 50,
-                              backgroundColor: Colors.transparent,
-                              child: ClipOval(
-                                child: Image.asset(
-                                  'asset/user.png',
-                                  fit: BoxFit.cover,
-                                ),
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: mainColor,
+                                width: 3.0,
                               ),
                             ),
-                            Positioned.fill(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: mainColor,
-                                    width: 3.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            if (favorited == 1) ...[
-                              const Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                  size: 30,
-                                ),
-                              ),
-                            ]
-                          ],
+                          ),
                         ),
-                        normalGap,
-                        Text(firstName, style: labelTextStyle(color: whiteColor, bold: false, size: 15, spacing: 1)),
+                        if (favorited == 1) ...[
+                          const Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 30,
+                            ),
+                          ),
+                        ]
                       ],
                     ),
-            ),
+                    normalGap,
+                    Text('$firstName $lastName', style: labelTextStyle(color: blackColor, bold: false, size: 15, spacing: 1)),
+                  ],
+                )),
             Container(
               width: widthOfMedia,
               height: 100,
@@ -158,7 +114,7 @@ class ProfileContact extends ConsumerWidget {
                       color: whiteColor,
                       size: 36.0,
                     ),
-                    Text(email, style: labelTextStyle(color: whiteColor, bold: false, size: 15, spacing: 1)),
+                    Text(email, style: labelTextStyle(color: blackColor, bold: false, size: 15, spacing: 1)),
                   ],
                 ),
                 onTap: () {
@@ -167,7 +123,26 @@ class ProfileContact extends ConsumerWidget {
               ),
             ),
             gapBetweenDifferentField,
-            Padding(padding: mainScreenPadding, child: buttonWidget.roundedButtonWidget('Send Email', widthOfMedia, () {}))
+            Padding(
+                padding: mainScreenPadding,
+                child: buttonWidget.roundedButtonWidget('Send Email', widthOfMedia, () {
+                  if (email == '') {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ConfirmationPopUp(
+                          titleAlert: 'This contact does not have email',
+                          contentAlert: 'Please update to send email',
+                          onConfirm: () async {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditContact(contact)));
+                          },
+                        );
+                      },
+                    );
+                  } else {
+                    sendEmail(email);
+                  }
+                }))
           ],
         ),
       ),

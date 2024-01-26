@@ -19,10 +19,28 @@ class ContactService {
       allContacts.addAll(apiContacts);
       List<ContactModel> localContacts = await getLocalContact();
       allContacts.addAll(localContacts);
-
       return allContacts;
     } catch (error) {
       print('Error fetching users: $error');
+      return [];
+    }
+  }
+
+  Future<List<ContactModel>> getApiContacts() async {
+    List<ContactModel> apiContacts = [];
+    var response = await http.get(Uri.parse(allUserUrl));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> result = jsonDecode(response.body)['data'];
+
+      apiContacts = result.map((contactJson) => ContactModel.fromJson(contactJson)).toList();
+
+      for (var contact in apiContacts) {
+        await DatabaseHelper.addContact(contact);
+      }
+
+      return apiContacts;
+    } else {
       return [];
     }
   }
@@ -40,25 +58,5 @@ class ContactService {
     }
 
     return localContactsModel;
-  }
-
-  Future<List<ContactModel>> getApiContacts() async {
-    List<ContactModel> apiContacts = [];
-    var response = await http.get(Uri.parse(allUserUrl));
-
-    if (response.statusCode == 200) {
-      final List<dynamic> result = jsonDecode(response.body)['data'];
-
-      apiContacts = result.map((contactJson) => ContactModel.fromJson(contactJson)).toList();
-
-      // await DatabaseHelper.clearAllContacts();
-      for (var contact in apiContacts) {
-        await DatabaseHelper.addContact(contact);
-      }
-
-      return apiContacts;
-    } else {
-      return [];
-    }
   }
 }
