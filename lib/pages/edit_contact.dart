@@ -174,9 +174,6 @@ class EditContact extends ConsumerWidget {
                     hintText: 'First Name',
                     hintStyle: TextStyle(color: Colors.grey),
                   ),
-                  onChanged: (value) {
-                    print(value);
-                  },
                 ),
               ),
               gapBetweenField,
@@ -193,9 +190,6 @@ class EditContact extends ConsumerWidget {
                     hintText: 'Last Name',
                     hintStyle: TextStyle(color: Colors.grey),
                   ),
-                  onChanged: (value) {
-                    print(value);
-                  },
                 ),
               ),
               gapBetweenField,
@@ -212,9 +206,6 @@ class EditContact extends ConsumerWidget {
                     hintText: 'Email',
                     hintStyle: TextStyle(color: Colors.grey),
                   ),
-                  onChanged: (value) {
-                    print(value);
-                  },
                 ),
               ),
               gapBetweenDifferentField,

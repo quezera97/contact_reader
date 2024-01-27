@@ -30,8 +30,6 @@ class DatabaseHelper {
       whereArgs: [contact.firstName, contact.lastName],
     );
 
-    print(existingContacts);
-
     if (existingContacts.isNotEmpty) {
       return -1;
     } else {

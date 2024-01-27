@@ -86,7 +86,7 @@ class _MyContactState extends ConsumerState<MyContact> {
 
     statusIsGranted = status.isGranted;
 
-    if (requestSync == false && isFromReset == false && isFirstRunAfterInstall == false) {
+    if (requestSync == false && isFromReset == false) {
       //regular sync contact
       _regularSync(statusIsGranted);
       return;
@@ -233,7 +233,22 @@ class _MyContactState extends ConsumerState<MyContact> {
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileContact(contact)));
                     },
                     onPressedCallback: () {
-                      sendEmail(email);
+                      if (email == '') {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return ConfirmationPopUp(
+                              titleAlert: 'This contact does not have email',
+                              contentAlert: 'Please update to send email',
+                              onConfirm: () async {
+                                Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditContact(contact)));
+                              },
+                            );
+                          },
+                        );
+                      } else {
+                        sendEmail(email);
+                      }
                     },
                   ),
                 ] else ...[
@@ -247,7 +262,22 @@ class _MyContactState extends ConsumerState<MyContact> {
                         Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileContact(contact)));
                       },
                       onPressedCallback: () {
-                        sendEmail(email);
+                        if (email == '') {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return ConfirmationPopUp(
+                                titleAlert: 'This contact does not have email',
+                                contentAlert: 'Please update to send email',
+                                onConfirm: () async {
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditContact(contact)));
+                                },
+                              );
+                            },
+                          );
+                        } else {
+                          sendEmail(email);
+                        }
                       },
                     ),
                   ] else ...[

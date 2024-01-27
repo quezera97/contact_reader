@@ -118,7 +118,22 @@ class ProfileContact extends ConsumerWidget {
                   ],
                 ),
                 onTap: () {
-                  print('sent');
+                  if (email == '') {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ConfirmationPopUp(
+                          titleAlert: 'This contact does not have email',
+                          contentAlert: 'Please update to send email',
+                          onConfirm: () async {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditContact(contact)));
+                          },
+                        );
+                      },
+                    );
+                  } else {
+                    sendEmail(email);
+                  }
                 },
               ),
             ),
