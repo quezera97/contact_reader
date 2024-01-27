@@ -14,3 +14,4 @@ const normalGap = Gap(10);
 const gapBetweenField = Gap(25);
 const gapBetweenDifferentField = Gap(30);
 const heightOfField = 50.0;
+const emptySizeBox = SizedBox(height: 0, width: 0);

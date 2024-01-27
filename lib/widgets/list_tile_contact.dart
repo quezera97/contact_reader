@@ -28,7 +28,7 @@ class ListTileContactWidget extends StatelessWidget {
         children: [
           Expanded(child: Text(title ?? '', overflow: TextOverflow.clip)),
           normalGap,
-          extraIntParam == 1 ? const Icon(Icons.star, color: Colors.amber) : const SizedBox(width: 0),
+          extraIntParam == 1 ? const Icon(Icons.star, color: Colors.amber) : emptySizeBox,
         ],
       ),
       subtitle: Row(

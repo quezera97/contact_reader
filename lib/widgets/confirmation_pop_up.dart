@@ -24,7 +24,7 @@ class ConfirmationPopUp extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(titleAlert ?? '', textAlign: TextAlign.center, style: labelTextStyle(bold: true, color: blackColor, size: 18, spacing: 1.1)),
-          titleAlert == '' ? const SizedBox(height: 0) : normalGap,
+          titleAlert == '' ? emptySizeBox : normalGap,
           Text(contentAlert ?? '', textAlign: TextAlign.center, style: labelTextStyle(bold: false, color: blackColor, size: 15, spacing: 1)),
           gapBetweenDifferentField,
           Row(
