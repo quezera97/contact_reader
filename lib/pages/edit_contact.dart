@@ -35,6 +35,8 @@ Future<String> _uploadImage() async {
 
 class EditContact extends ConsumerWidget {
   final buttonWidget = ButtonWidget();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -70,162 +72,194 @@ class EditContact extends ConsumerWidget {
         backgroundColor: mainColor,
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: mainScreenPadding,
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  InkWell(
-                    child: favorited == 1 ? const Text('Remove From Fav', style: TextStyle(color: mainColor)) : const Text('Add To Fav', style: TextStyle(color: mainColor)),
-                    onTap: () async {
-                      ContactModel editedContact = ContactModel(
-                        id: contact.id,
-                        email: contact.email,
-                        firstName: contact.firstName,
-                        lastName: contact.lastName,
-                        avatar: uploadedImage,
-                        favorited: favorited == 1 ? 0 : 1,
-                      );
-
-                      await DatabaseHelper.updateContact(editedContact);
-
-                      ref.read(contactProvider.notifier).updateContactProvider(editedContact);
-
-                      favorited == 1 ? ToastHelper.showToast(message: 'Contact removed from favorite') : ToastHelper.showToast(message: 'Contact added to favorite');
-                    },
-                  ),
-                ],
-              ),
-              InkWell(
-                onTap: () async {
-                  uploadedImage = await _uploadImage();
-
-                  ContactModel editedContact = ContactModel(
-                    id: contact.id,
-                    email: contact.email,
-                    firstName: contact.firstName,
-                    lastName: contact.lastName,
-                    avatar: uploadedImage,
-                    favorited: favorited,
-                  );
-
-                  await DatabaseHelper.updateContact(editedContact);
-
-                  ref.read(contactProvider.notifier).updateContactProvider(editedContact);
-                },
-                child: Stack(
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: mainScreenPadding,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.transparent,
-                      child: ClipOval(
-                        child: getImageWidget(uploadedImage),
-                      ),
-                    ),
-                    Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: mainColor,
-                            width: 3.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Stack(children: [
-                        Positioned.fill(
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: mainColor,
-                            ),
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.all(3),
-                          child: Icon(
-                            Icons.edit_sharp,
-                            color: whiteColor,
-                            size: 20,
-                          ),
-                        ),
-                      ]),
+                    InkWell(
+                      child: favorited == 1 ? const Text('Remove From Fav', style: TextStyle(color: mainColor)) : const Text('Add To Fav', style: TextStyle(color: mainColor)),
+                      onTap: () async {
+                        ContactModel editedContact = ContactModel(
+                          id: contact.id,
+                          email: contact.email,
+                          firstName: contact.firstName,
+                          lastName: contact.lastName,
+                          avatar: uploadedImage,
+                          favorited: favorited == 1 ? 0 : 1,
+                        );
+
+                        await DatabaseHelper.updateContact(editedContact);
+
+                        ref.read(contactProvider.notifier).updateContactProvider(editedContact);
+
+                        favorited == 1 ? ToastHelper.showToast(message: 'Contact removed from favorite') : ToastHelper.showToast(message: 'Contact added to favorite');
+                      },
                     ),
                   ],
                 ),
-              ),
-              gapBetweenDifferentField,
-              SizedBox(
-                width: widthOfMedia,
-                height: heightOfField,
-                child: TextFormField(
-                  controller: firstNameController,
-                  decoration: const InputDecoration(
-                    label: Text('First Name'),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
-                    ),
-                    hintText: 'First Name',
-                    hintStyle: TextStyle(color: Colors.grey),
+                InkWell(
+                  onTap: () async {
+                    uploadedImage = await _uploadImage();
+
+                    ContactModel editedContact = ContactModel(
+                      id: contact.id,
+                      email: contact.email,
+                      firstName: contact.firstName,
+                      lastName: contact.lastName,
+                      avatar: uploadedImage,
+                      favorited: favorited,
+                    );
+
+                    await DatabaseHelper.updateContact(editedContact);
+
+                    ref.read(contactProvider.notifier).updateContactProvider(editedContact);
+                  },
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.transparent,
+                        child: ClipOval(
+                          child: getImageWidget(uploadedImage),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: mainColor,
+                              width: 3.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Stack(children: [
+                          Positioned.fill(
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: mainColor,
+                              ),
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.all(3),
+                            child: Icon(
+                              Icons.edit_sharp,
+                              color: whiteColor,
+                              size: 20,
+                            ),
+                          ),
+                        ]),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              gapBetweenField,
-              SizedBox(
-                width: widthOfMedia,
-                height: heightOfField,
-                child: TextFormField(
-                  controller: lastNameController,
-                  decoration: const InputDecoration(
-                    label: Text('Last Name'),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                gapBetweenDifferentField,
+                SizedBox(
+                  width: widthOfMedia,
+                  height: heightOfField,
+                  child: TextFormField(
+                    controller: firstNameController,
+                    decoration: const InputDecoration(
+                      label: Text('First Name'),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                      ),
+                      hintText: 'First Name',
+                      hintStyle: TextStyle(color: Colors.grey),
+                      errorStyle: TextStyle(height: 0.3),
                     ),
-                    hintText: 'Last Name',
-                    hintStyle: TextStyle(color: Colors.grey),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'This field is required';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-              ),
-              gapBetweenField,
-              SizedBox(
-                width: widthOfMedia,
-                height: heightOfField,
-                child: TextFormField(
-                  controller: emailController,
-                  decoration: const InputDecoration(
-                    label: Text('Email'),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                gapBetweenField,
+                SizedBox(
+                  width: widthOfMedia,
+                  height: heightOfField,
+                  child: TextFormField(
+                    controller: lastNameController,
+                    decoration: const InputDecoration(
+                      label: Text('Last Name'),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                      ),
+                      hintText: 'Last Name',
+                      hintStyle: TextStyle(color: Colors.grey),
+                      errorStyle: TextStyle(height: 0.3),
                     ),
-                    hintText: 'Email',
-                    hintStyle: TextStyle(color: Colors.grey),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'This field is required';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-              ),
-              gapBetweenDifferentField,
-              buttonWidget.roundedButtonWidget('Done', widthOfMedia, () async {
-                ContactModel editedContact = ContactModel(
-                  id: contact.id,
-                  email: emailController.text,
-                  firstName: firstNameController.text,
-                  lastName: lastNameController.text,
-                  avatar: uploadedImage,
-                  favorited: favorited,
-                );
+                gapBetweenField,
+                SizedBox(
+                  width: widthOfMedia,
+                  height: heightOfField,
+                  child: TextFormField(
+                    controller: emailController,
+                    decoration: const InputDecoration(
+                      label: Text('Email'),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                      ),
+                      hintText: 'Email',
+                      hintStyle: TextStyle(color: Colors.grey),
+                      errorStyle: TextStyle(height: 0.3),
+                    ),
+                    validator: (value) {
+                      bool isEmailValid = isValidEmail(emailController.text);
 
-                await DatabaseHelper.updateContact(editedContact);
+                      if (value == null || value.isEmpty) {
+                        return 'This field is required';
+                      } else if (isEmailValid == false) {
+                        return 'Please enter valid email format';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                gapBetweenDifferentField,
+                buttonWidget.roundedButtonWidget('Done', widthOfMedia, () async {
+                  FocusScope.of(context).unfocus();
 
-                ref.read(contactProvider.notifier).updateContactProvider(editedContact);
+                  if (_formKey.currentState!.validate()) {
+                    ContactModel editedContact = ContactModel(
+                      id: contact.id,
+                      email: emailController.text,
+                      firstName: firstNameController.text,
+                      lastName: lastNameController.text,
+                      avatar: uploadedImage,
+                      favorited: favorited,
+                    );
 
-                ToastHelper.showToast(message: 'Contact successfully updated');
-              }),
-            ],
+                    await DatabaseHelper.updateContact(editedContact);
+
+                    ref.read(contactProvider.notifier).updateContactProvider(editedContact);
+
+                    ToastHelper.showToast(message: 'Contact successfully updated');
+                  }
+                }),
+              ],
+            ),
           ),
         ),
       ),

@@ -490,7 +490,7 @@ class _MyContactState extends ConsumerState<MyContact> {
                   ]))),
         );
       }),
-      floatingActionButton: fabWidget(context, AddContact()),
+      floatingActionButton: fabWidget(context, AddContact(), ref),
     );
   }
 }
