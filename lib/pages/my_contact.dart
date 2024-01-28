@@ -16,6 +16,7 @@ import '../providers/searched_value_provider.dart';
 import '../services/contact_services.dart';
 import '../services/database_helper.dart';
 import '../services/mail_services.dart';
+import '../widgets/bottom_nav_bar.dart';
 import '../widgets/button.dart';
 import '../widgets/confirmation_pop_up.dart';
 import '../widgets/fab_widget.dart';
@@ -283,7 +284,7 @@ class _MyContactState extends ConsumerState<MyContact> {
                   ] else ...[
                     emptySizeBox,
                   ]
-                ]
+                ],
               ],
             ),
           );
@@ -491,6 +492,8 @@ class _MyContactState extends ConsumerState<MyContact> {
         );
       }),
       floatingActionButton: fabWidget(context, AddContact(), ref),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
+      bottomNavigationBar: bottomNavBar(context),
     );
   }
 }
